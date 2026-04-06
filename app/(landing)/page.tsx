@@ -1,4 +1,3 @@
-import Header from "./components/header";
 import HeroSection from "./components/heroSection";
 import PopilStoreSection from "./components/popilStoreSection";
 import FeaturesSection from "./components/featuresSection";
@@ -8,12 +7,17 @@ import Footer from "./components/footer";
 export default function Home() {
   return (
     <>
-      <HeroSection />
-      <PopilStoreSection />
-      <FeaturesSection />
-      <div className="bg-cover bg-center" style={{backgroundImage : "url('/background/bottomBG2.png')"}}>
-        <FaqSection />
-        <Footer/>
+      <div className="overflow-y-visible overflow-x-hidden">
+        <HeroSection />
+        <PopilStoreSection />
+        <FeaturesSection />
+        <div
+          className="bg-cover bg-center"
+          style={{ backgroundImage: "url('/background/bottomBG2.png')" }}
+        >
+          <FaqSection />
+          <Footer />
+        </div>
       </div>
     </>
   );

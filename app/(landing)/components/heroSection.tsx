@@ -1,95 +1,188 @@
 "use client";
 
+import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import Header from "./header";
 import NavButton from "@/app/ui/buttons/navButton";
 import { storeIcon } from "@/public/icons";
 import { Apple } from "lucide-react";
 import BlurText from "@/app/ui/BlurText";
+import { motion, AnimatePresence } from "framer-motion";
+
+const slides = [
+  { src: "/slides/slider-1.jpg", alt: "Slide 1" },
+  { src: "/slides/slider-2.jpg", alt: "Slide 2" },
+  { src: "/slides/slider-3.jpg", alt: "Slide 3" },
+  { src: "/slides/slider-4.jpg", alt: "Slide 4" },
+];
+
+const AUTOPLAY_INTERVAL = 5000;
 
 export default function HeroSection() {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [progress, setProgress] = useState(0);
+  const progressRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
+  const startTimeRef = useRef<number>(0);
+
+  const startProgress = useCallback(() => {
+    startTimeRef.current = performance.now();
+    setProgress(0);
+
+    const animate = (now: number) => {
+      const elapsed = now - startTimeRef.current;
+      const pct = Math.min((elapsed / AUTOPLAY_INTERVAL) * 100, 100);
+      setProgress(pct);
+      if (pct < 100) {
+        progressRef.current = requestAnimationFrame(animate);
+      }
+    };
+    if (progressRef.current) cancelAnimationFrame(progressRef.current);
+    progressRef.current = requestAnimationFrame(animate);
+  }, []);
+
+  const goTo = useCallback(
+    (index: number) => {
+      setDirection(index > current ? 1 : -1);
+      setCurrent(index);
+      startProgress();
+    },
+    [current, startProgress]
+  );
+
+  const next = useCallback(() => {
+    setDirection(1);
+    setCurrent((prev) => (prev + 1) % slides.length);
+    startProgress();
+  }, [startProgress]);
+
+  // Autoplay
+  useEffect(() => {
+    startProgress();
+    timerRef.current = setInterval(() => {
+      next();
+    }, AUTOPLAY_INTERVAL);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (progressRef.current) cancelAnimationFrame(progressRef.current);
+    };
+  }, [next, startProgress]);
+
+  // Restart timer when user interacts
+  const handleDotClick = (index: number) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    goTo(index);
+    timerRef.current = setInterval(() => {
+      next();
+    }, AUTOPLAY_INTERVAL);
+  };
+
+  const slideVariants = {
+
+    enter: (dir: number) => ({
+      opacity: 0,
+      scale: 1,
+      x: dir > 0 ? 80 : -800,
+    }),
+    center: {
+      opacity: 1,
+      scale: 1,
+      x: 0,
+      transition: {
+        duration: 1,
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
+      },
+    },
+    exit: (dir: number) => ({
+      opacity: 1,
+      scale: 1,
+      x: dir > 0 ? -800 : 80,
+      transition: {
+        duration: 0,
+        // ease: [0.25, 0.46, 0.45, 0.94] as const,
+      },
+    }),
+  };
+
   return (
-    <section className="relative min-h-[90vh] md:min-h-[70vh] w-full flex justify-center items-center">
-      {/* Background image */}
+    <section
+      id="hero-slider"
+      className="relative w-full overflow-hidden h-[350px] sm:h-[600px] md:h-[720px] lg:h-[90vh]"
+      // style={{ height: "1080px", maxHeight: "100vh" }}
+    >
+      {/* ── Slide Images ────────────────────────────────── */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/background/HeroSection.png"
-          alt=""
-          fill
-          className="object-cover object-center"
-          priority
-        />
-        {/* Bottom gradient fade into next section */}
-        <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background" />
+        <AnimatePresence mode="popLayout" custom={direction}>
+          <motion.div
+            key={current}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="absolute inset-0"
+          >
+            <Image
+              src={slides[current].src}
+              alt={slides[current].alt}
+              fill
+              priority={current === 0}
+              className="object-contain object-center"
+              sizes=""
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* ── Dark overlays ───────────────────────────── */}
+        
       </div>
 
-      {/* Header on top */}
-      {/* <div className="relative z-20">
-        <Header />
-      </div> */}
+      {/* ── Hero Content ────────────────────────────────── */}
+      <div className="relative z-10 mx-auto flex h-full w-[calc(100%-50px)] sm:w-[calc(100%-150px)] flex-col justify-end pb-32 md:pb-40 lg:pb-44">
+       
+        {/* ── Slide Indicators ──────────────────────────── */}
+        {/* <div className="mt-10 flex items-center gap-3">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => handleDotClick(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              className="group relative flex items-center focus:outline-none cursor-pointer"
+            >
+             
+              <div
+                className={`relative overflow-hidden rounded-full transition-all duration-500 ${
+                  i === current
+                    ? "w-12 h-1.5 bg-white/20"
+                    : "w-3 h-1.5 bg-white/20 hover:bg-white/40"
+                }`}
+              >
+               
+                {i === current && (
+                  <motion.div
+                    className="absolute left-0 top-0 h-full rounded-full"
+                    style={{
+                      width: `${progress}%`,
+                      background:
+                        "linear-gradient(90deg, var(--primary), #ff8c00)",
+                    }}
+                    transition={{ duration: 0.05 }}
+                  />
+                )}
+              </div>
+            </button>
+          ))}
 
-      {/* Hero content */}
-      <div className="relative z-10 mx-auto flex  w-[calc(100%-50px)]  sm:w-[calc(100%-150px)]  flex-col-reverse items-center justify-between gap-8  md:flex-row">
-        {/* Left side - Text */}
-        <div className="flex flex-1 flex-col gap-6 pb-20 md:pb-0">
-          <h1 className="">
-            
-            <BlurText
-              text="Discover, Create, Share"
-              delay={200}
-              animateBy="words"
-              direction="top"
-              // onAnimationComplete={handleAnimationComplete}
-              className="font-heading text-4xl font-bold uppercase leading-tight tracking-tight text-white md:text-5xl lg:text-6xl"
-            />
-            {/* Discover, Create, Share */}
-          </h1>
-          <p className="max-w-md text-base leading-relaxed text-white/60 md:text-lg">
-            Discover music and hire new songs. Sing! In the foundation, you can
-            create vibrant clips and create stuff with your music in a creative,
-            social app called{" "}
-            <span className="text-primary font-semibold">Popil</span>.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <NavButton
-              href="/store"
-              text="Store"
-              icon={
-                <Image
-                  src={storeIcon}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="h-5 w-5"
-                />
-              }
-              colorClassName="text-white"
-              className="rounded-full border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2.5 text-sm font-medium transition-all duration-300 hover:bg-white/10"
-            />
-
-            <NavButton
-              onClick={() => {}}
-              text="Get App"
-              icon={<Apple className="h-5 w-5" />}
-              colorClassName="text-white"
-              className="rounded-full border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2.5 text-sm font-medium transition-all duration-300 hover:bg-white/10"
-            />
-          </div>
-        </div>
-
-        {/* Right side - Phone mockup image */}
-        <div className="relative flex flex-1 items-center justify-center md:justify-end">
-          <Image
-            src="/background/heroImage.png"
-            alt="Popil App Preview"
-            width={600}
-            height={600}
-            priority
-            className="h-auto w-[320px] drop-shadow-2xl sm:w-[400px] md:w-[500px] lg:w-[600px]"
-          />
-        </div>
+         
+          <span className="ml-3 text-xs font-medium tracking-wider text-white/40 tabular-nums">
+            {String(current + 1).padStart(2, "0")} /{" "}
+            {String(slides.length).padStart(2, "0")}
+          </span>
+        </div> */}
       </div>
+
+      
     </section>
   );
 }

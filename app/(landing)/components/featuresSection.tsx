@@ -18,7 +18,11 @@ import SpotlightCard from "@/components/SpotlightCard";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
-const viewport = { once: true as const, amount: 0.35 as const, margin: "-40px" as const };
+const viewport = {
+  once: true as const,
+  amount: 0.35 as const,
+  margin: "-40px" as const,
+};
 
 const titleVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -58,47 +62,56 @@ const features = [
   {
     icon: videoIcon,
     label: "VIDEO",
-    description: "Stream and share high-quality videos with seamless playback across all devices.",
+    description:
+      "Stream and share high-quality videos with seamless playback across all devices.",
   },
   {
     icon: songIcon,
     label: "SONG",
-    description: "Discover and enjoy millions of songs with crystal-clear audio streaming.",
+    description:
+      "Discover and enjoy millions of songs with crystal-clear audio streaming.",
   },
   {
     icon: karaokeIcon,
     label: "KARAOKE",
-    description: "Sing along to your favorite tracks with real-time lyrics and voice effects.",
+    description:
+      "Sing along to your favorite tracks with real-time lyrics and voice effects.",
   },
   {
     icon: scalingIcon,
     label: "SCALING",
-    description: "Effortlessly scale your content and reach a growing global audience.",
+    description:
+      "Effortlessly scale your content and reach a growing global audience.",
   },
   {
     icon: clipIcon,
     label: "CLIP",
-    description: "Create and share bite-sized clips that capture the best moments instantly.",
+    description:
+      "Create and share bite-sized clips that capture the best moments instantly.",
   },
   {
     icon: popilspaceIcon,
     label: "POPILSPACE",
-    description: "Your personal creative hub to connect, collaborate, and build community.",
+    description:
+      "Your personal creative hub to connect, collaborate, and build community.",
   },
   {
     icon: paxIcon,
     label: "PAX",
-    description: "Secure and instant payments for creators with transparent earnings tracking.",
+    description:
+      "Secure and instant payments for creators with transparent earnings tracking.",
   },
   {
     icon: popilAIIcon,
     label: "POPILAI",
-    description: "AI-powered tools that enhance your creative workflow and content quality.",
+    description:
+      "AI-powered tools that enhance your creative workflow and content quality.",
   },
   {
     icon: ecosystemIcon,
     label: "POPIL ECOSYSTEM",
-    description: "A unified platform connecting all Popil services into one seamless experience.",
+    description:
+      "A unified platform connecting all Popil services into one seamless experience.",
   },
 ];
 
@@ -109,10 +122,10 @@ export default function FeaturesSection() {
     setActiveCard((prev) => (prev === index ? null : index));
   };
   return (
-    <section className="relative w-full py-24 md:py-32">
-      <div className="mx-auto w-full max-w-7xl px-6">
+    <section className="relative w-full py-24 md:py-32 ">
+      <div className="mx-auto  sm:w-[calc(100%-150px)] w-[calc(100%-50px)] px-6">
         <motion.h2
-          className="mb-16 text-center font-heading text-3xl font-bold text-white md:text-4xl lg:text-5xl"
+          className="mb-16 text-center font-heading text-3xl font-bold text-transparent bg-clip-text bg-linear-to-b from-primary to-secondary md:text-4xl lg:text-[75px]"
           initial="hidden"
           whileInView="visible"
           viewport={viewport}
@@ -121,7 +134,7 @@ export default function FeaturesSection() {
           What Makes Popil Pop
         </motion.h2>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-6">
+        <div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-3 md:gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={feature.label}
@@ -133,13 +146,14 @@ export default function FeaturesSection() {
                 delay: index * 0.04,
                 ease: easeOut,
               }}
+              className="flex w-full justify-center"
             >
               <SpotlightCard
-                className="custom-spotlight-card"
+                className="custom-spotlight-card aspect-square w-full max-w-[300px] max-h-[300px] shrink-0"
                 spotlightColor="rgba(255, 140, 0, 0.2)"
               >
                 <motion.div
-                  className={`group relative flex flex-col items-center justify-center overflow-hidden p-8 min-h-[200px] ${activeCard === index ? "active" : ""}`}
+                  className={`group relative flex h-full w-full flex-col items-center justify-center overflow-hidden p-8 ${activeCard === index ? "active" : ""}`}
                   initial="hidden"
                   whileInView="visible"
                   viewport={viewport}
@@ -182,6 +196,24 @@ export default function FeaturesSection() {
             </motion.div>
           ))}
         </div>
+      </div>
+      <div className="absolute top-0 left-[-30rem]  z-[-1]">
+        <Image
+          src="/background/effect.png"
+          alt="Store Background"
+          width={1920}
+          height={1080}
+          className="w-full h-auto rotate-180"
+        />
+      </div>
+      <div className="absolute -top-[20rem] right-[-30rem]  z-[-1]">
+        <Image
+          src="/background/effect.png"
+          alt="Store Background"
+          width={1920}
+          height={1080}
+          className="w-full h-auto"
+        />
       </div>
     </section>
   );

@@ -6,15 +6,15 @@ const navLinks = [
   { label: "HOME", href: "/" },
   { label: "TERMS & CONDITIONS", href: "/terms" },
   { label: "PRIVACY POLICY", href: "/privacy" },
-  { label: "CONTACT US", href: "/contact" },
+  { label: "CONTACT US", href: "/contact-us" },
 ];
 
 const socialLinks = [
-  { label: "Facebook", href: "#", Icon: facebookIcon },
-  { label: "X", href: "#", Icon: twitterIcon },
-  { label: "LinkedIn", href: "#", Icon: linkedinIcon },
-  { label: "Instagram", href: "#", Icon: instagramIcon },
-  { label: "YouTube", href: "#", Icon: youtubeIcon },
+  { label: "Facebook", href: "https://www.facebook.com/", Icon: facebookIcon },
+  { label: "X", href: "https://x.com/", Icon: twitterIcon },
+  { label: "LinkedIn", href: "https://www.linkedin.com/login", Icon: linkedinIcon },
+  { label: "Instagram", href: "https://www.instagram.com/", Icon: instagramIcon },
+  { label: "YouTube", href: "https://www.youtube.com/", Icon: youtubeIcon },
 ];
 
 export default function Footer() {

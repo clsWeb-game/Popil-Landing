@@ -251,9 +251,10 @@ export default function LoginPage() {
           hueShift={211}
           noiseIntensity={0}
           scanlineIntensity={0}
-          speed={0.5}
+          speed={1}
           scanlineFrequency={0}
           warpAmount={0}
+          resolutionScale={1.1}
         />
         <div className="absolute inset-0 " />
       </div>

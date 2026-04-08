@@ -43,7 +43,7 @@ const faqs = [
 ];
 
 export default function FaqSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -61,18 +61,18 @@ export default function FaqSection() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col ">
           {faqs.map((faq, idx) => (
-            <div key={idx} className="flex flex-col items-center gap-6">
+            <div key={idx} className="flex flex-col items-center gap-6 cursor-pointer pt-6 pb-6" onClick={() => toggle(idx)} >
               {idx !== 0 && (
                 <div className="h-px w-full bg-[#2D3036]" />
               )}
               <button
                 type="button"
-                onClick={() => toggle(idx)}
-                className="flex w-full items-start gap-6"
+                
+                className="flex w-full items-start gap-6 cursor-pointer"
               >
-                <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start gap-2 font-medium">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start gap-2 font-medium cursor-pointer">
                   <span className="text-left text-xl leading-7 text-white">
                     {faq.question}
                   </span>

@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { calenderIcon, clockIcon, containerIcon } from "@/public/icons";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import MovieRentModal from "./movieRentModal";
 
 const TILE_W = 390;
 const TILE_H = 270;
@@ -37,10 +38,12 @@ function MovieTile({
   movie,
   reducedMotion,
   onActivate,
+  onRentClick,
 }: {
   movie: SliderItem;
   reducedMotion: boolean;
   onActivate?: () => void;
+  onRentClick?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const img = getImagePath(movie.coverImage ?? movie.bannerImage);
@@ -153,8 +156,11 @@ function MovieTile({
 
             <button
               type="button"
-              className="[font-family:var(--font-montserrat)] flex w-full items-center justify-center gap-2 rounded-[12px] sm:rounded-[16px] bg-linear-to-b from-primary to-secondary py-2 sm:py-4 text-sm font-bold text-white shadow-lg shadow-[#ff8c00]/25 pointer-events-auto"
-              onClick={(e) => e.stopPropagation()}
+              className="[font-family:var(--font-montserrat)] flex w-full items-center justify-center gap-2 rounded-[12px] sm:rounded-[16px] bg-linear-to-b from-primary to-secondary py-2 sm:py-4 text-sm font-bold text-white shadow-lg shadow-[#ff8c00]/25 pointer-events-auto hover:bg-[#ff9900] cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRentClick?.();
+              }}
             >
               Rent  Now
             </button>
@@ -182,6 +188,7 @@ function useVisibleTileCount() {
 function MovieSlider({ title, data }: { title: string; data: SliderItem[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(0);
+  const [selectedMovie, setSelectedMovie] = useState<SliderItem | null>(null);
   const reducedMotion = useReducedMotion() ?? false;
   const visibleCount = useVisibleTileCount();
 
@@ -265,12 +272,7 @@ function MovieSlider({ title, data }: { title: string; data: SliderItem[] }) {
                     <MovieTile
                       movie={movie}
                       reducedMotion={reducedMotion}
-                      // onActivate={() => {
-                      //   if (virtualIndex !== currentIndex) {
-                      //     setSlideDir(virtualIndex > currentIndex ? 1 : -1);
-                      //     setCurrentIndex(virtualIndex);
-                      //   }
-                      // }}
+                      onRentClick={() => setSelectedMovie(movie)}
                     />
                   </motion.div>
                 );
@@ -279,6 +281,11 @@ function MovieSlider({ title, data }: { title: string; data: SliderItem[] }) {
           </div>
         </div>
       </div>
+
+      <MovieRentModal
+        movie={selectedMovie}
+        onClose={() => setSelectedMovie(null)}
+      />
     </section>
   );
 }

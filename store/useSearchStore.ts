@@ -37,7 +37,15 @@ export const useSearchStore = create<SearchState>((set) => ({
   setError: (msg) => set({ error: msg }),
   openPopup: () => set({ isPopupOpen: true }),
   closePopup: () => set({ isPopupOpen: false }),
-  selectMovie: (movie) => set({ selectedMovie: movie, isPopupOpen: false }),
+  selectMovie: (movie) =>
+    set({
+      selectedMovie: movie,
+      isPopupOpen: false,
+      query: "",
+      results: [],
+      error: null,
+      isLoading: false,
+    }),
   clearSelectedMovie: () => set({ selectedMovie: null }),
   reset: () => set(initialState),
 }));

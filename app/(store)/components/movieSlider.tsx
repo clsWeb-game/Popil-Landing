@@ -51,7 +51,7 @@ function MovieTile({
 
   return (
     <div
-      className="relative shrink-0 cursor-pointer rounded-[18px] outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-primary w-[290px] h-[200px] md:w-[390px] md:h-[270px]"
+      className="relative shrink-0 cursor-pointer rounded-[18px] outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-primary w-[290px] md:w-[390px] aspect-video"
       role="group"
       tabIndex={0}
       aria-label={movie.movieName ? `${movie.movieName}` : "Movie"}
@@ -75,24 +75,22 @@ function MovieTile({
             : "translateY(0)",
         }}
       >
-        {/* Taller image layer: lifts by 55px on hover into section pt-[55px] */}
+        {/* 16:9 image frame (banner/cover is always 16:9) */}
         <div
-          className="absolute left-0 right-0 bg-cover bg-center transition-transform duration-300 ease-out rounded-[18px] h-[255px] md:h-[325px]"
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-300 ease-out rounded-[18px]"
           style={{
-            bottom: 0,
             backgroundImage: `url(${img})`,
-            // transform: hovered ? `translateY(-${IMAGE_LIFT_PX}px)` : "translateY(0)",
           }}
         />
       </div>
 
       <div
-        className={`pointer-events-none absolute bg-linear-to-t from-background via-background to-transparent transition-opacity duration-300 z-1 w-full h-full ${
+        className={`pointer-events-none absolute bg-linear-to-t from-background via-background to-transparent transition-opacity duration-300 z-20 w-full h-full ${
           hovered ? "opacity-100" : "opacity-0"
         }`}
       />
       <motion.div
-        className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-4 pt-6 z-2"
+        className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-4 pt-6 z-20"
         initial={false}
         animate={
           instant
@@ -185,7 +183,35 @@ function useVisibleTileCount() {
   return count;
 }
 
-function MovieSlider({ title, data }: { title: string; data: SliderItem[] }) {
+function MovieSliderSkeleton({ title }: { title: string }) {
+  return (
+    <section className="flex w-full flex-col bg-background text-white">
+      <div className="flex flex-1 flex-col justify-center px-5 py-8 md:px-10 lg:px-14 md:py-10">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="[font-family:var(--font-montserrat)] text-xl font-semibold tracking-tight text-white md:text-2xl">
+            {title}
+          </h2>
+          <div className="flex items-center gap-8">
+            <div className="h-12 w-12 rounded-full bg-white/10" />
+            <div className="h-12 w-12 rounded-full bg-white/10" />
+          </div>
+        </div>
+        <div className="w-full overflow-x-clip overflow-y-visible">
+          <div className="mx-auto flex w-max items-end justify-center gap-4 px-1 pt-[55px] md:gap-5 animate-pulse">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="shrink-0 w-[290px] md:w-[390px] aspect-video rounded-[18px] bg-white/10"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MovieSlider({ title, data, loading = false }: { title: string; data: SliderItem[]; loading?: boolean }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(0);
   const [selectedMovie, setSelectedMovie] = useState<SliderItem | null>(null);
@@ -217,6 +243,8 @@ function MovieSlider({ title, data }: { title: string; data: SliderItem[] }) {
     }
     return itemsList;
   }, [currentIndex, n, visibleCount]);
+
+  if (loading) return <MovieSliderSkeleton title={title} />;
 
   if (!n) return null;
 

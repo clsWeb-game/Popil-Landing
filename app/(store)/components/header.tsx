@@ -14,6 +14,7 @@ import { useFetch } from "@/hooks/useFetch";
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const navIconOnlySm = "sr-only md:not-sr-only";
+  const [searchCollapsed, setSearchCollapsed] = useState(true);
 
   const {
     query,
@@ -124,9 +125,19 @@ export default function Header() {
 
           <nav className="relative flex items-center gap-3">
             <ResizeSearchBar
-              defaultCollapsed={true}
+              collapsed={searchCollapsed}
+              onCollapsedChange={setSearchCollapsed}
               value={query}
               onChange={handleSearchChange}
+              onOpen={() => {
+                // When opening the popup: clear text and ensure expanded
+                setQuery("");
+                setResults([]);
+                setError(null);
+                setLoading(false);
+                openPopup();
+                setSearchCollapsed(false);
+              }}
               onFocus={() => {
                 if (query.trim().length > 0) openPopup();
               }}

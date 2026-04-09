@@ -82,7 +82,7 @@ export default function SearchResultsDropdown() {
               enableArrowNavigation
               displayScrollbar={false}
               className="w-full!"
-              itemClassName="!bg-white/5 hover:!bg-white/10 transition-colors"
+              itemClassName="bg transition-colors"
             />
           )}
         </motion.div>

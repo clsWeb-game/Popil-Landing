@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import "@/app/globals.css";
 
 type Props = {
   placeholder?: string;
@@ -7,6 +8,9 @@ type Props = {
   value?: string;
   onChange?: (value: string) => void;
   onFocus?: () => void;
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
+  onOpen?: () => void;
 };
 
 export default function ResizeSearchBar({
@@ -16,14 +20,24 @@ export default function ResizeSearchBar({
   value,
   onChange,
   onFocus,
+  collapsed,
+  onCollapsedChange,
+  onOpen,
 }: Props) {
   return (
     <div className={["ResizeSearchBar__container", className].filter(Boolean).join(" ")}>
       <input
-        defaultChecked={defaultCollapsed}
+        {...(typeof collapsed === "boolean"
+          ? { checked: collapsed }
+          : { defaultChecked: defaultCollapsed })}
         className="ResizeSearchBar__checkbox"
         type="checkbox"
         aria-label="Toggle search"
+        onChange={(e) => {
+          const nextCollapsed = e.target.checked;
+          onCollapsedChange?.(nextCollapsed);
+          if (!nextCollapsed) onOpen?.();
+        }}
       />
       <div className="ResizeSearchBar__mainbox">
         <div className="ResizeSearchBar__iconContainer" aria-hidden="true">

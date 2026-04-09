@@ -46,7 +46,7 @@ export default function SubscriptionCard({
 
   return (
     <article
-      className={`relative flex h-[550px] w-[360px] flex-col overflow-hidden rounded-[28px] px-5 pb-5 ${
+      className={`relative flex h-[550px] w-full max-w-[360px] flex-col overflow-hidden rounded-[28px] px-5 pb-5 ${
         isCurrentPlan ? "" : ""
       }`}
     >

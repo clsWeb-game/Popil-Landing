@@ -84,11 +84,11 @@ export default function Subscription() {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-5 xl:gap-6">
+          <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4 xl:gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[520px] w-[360px] animate-pulse rounded-[28px] bg-white/5"
+                className="h-[520px] w-full max-w-[360px] animate-pulse rounded-[28px] bg-white/5"
               />
             ))}
           </div>
@@ -113,7 +113,7 @@ export default function Subscription() {
             ) : null}
           </div>
         ) : (
-          <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-5 xl:gap-6">
+          <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4 xl:gap-6">
             {plans.map((plan) => (
               <SubscriptionCard
                 key={plan._id}

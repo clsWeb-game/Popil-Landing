@@ -119,7 +119,7 @@ function StoreSlider({ data, loading = false }: { data: MovieData[]; loading?: b
       ))}
 
       {/* Main Content */}
-      <div className="relative mx-auto w-[calc(100%-50px)]  sm:w-[calc(100%-150px)] h-full flex flex-col justify-center lg:justify-end"  >
+      <div className="relative mx-auto w-[calc(100%-50px)]  sm:w-[calc(100%-150px)] h-full flex flex-col justify-center lg:justify-end pb-0 md:pb-0 lg:pb-36 xl:pb-5"  >
         <div className="max-w-xl md:max-w-3xl z-10 w-full mt-26 sm:mt-0 sm:mb-[53px]">
           <h1 className="[font-family:var(--font-montserrat)] text-[30px] sm:text-[40px] md:text-[62px] leading-[0.95] md:leading-[0.9] font-extrabold uppercase tracking-[-0.03em] mb-5 drop-shadow-lg">
             {activeMovie.movieName}
@@ -171,7 +171,7 @@ function StoreSlider({ data, loading = false }: { data: MovieData[]; loading?: b
 
       {/* Thumbnails (Right aligned per screenshot) */}
       <div 
-        className="absolute bottom-[10px] sm:bottom-[22px] -right-10 md:right-16 flex items-end gap-2.5 md:gap-3 overflow-x-auto max-w-full pb-4 z-1"
+        className="absolute bottom-[10px] sm:bottom-[22px] -right-10 md:right-16 flex items-end gap-2.5 md:gap-3 overflow-x-auto max-w-full pb-4 z-1 mr-10 sm:mr-0 "
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {items.map((movie, index) => (

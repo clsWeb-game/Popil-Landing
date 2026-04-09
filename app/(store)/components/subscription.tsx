@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useRazorpayCheckout } from "@/hooks/useRazorpayCheckout";
 import SubscriptionCard from "./SubscriptionCard";
+import { toast } from "sonner";
 
 export default function Subscription() {
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
@@ -44,11 +45,18 @@ export default function Subscription() {
   const handleSubscribe = async (planId: string) => {
     clearError();
     setProcessingPlanId(planId);
+    const planName = plans.find((p) => String(p._id) === String(planId))?.name;
     try {
       await purchase(planId);
       await refetchMySubscription();
+      toast.success(planName ? `Subscribed to ${planName}` : "Subscription successful");
     } catch (err: any) {
       if (err?.message === "dismissed") return;
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Subscription failed";
+      toast.error(msg);
     } finally {
       setProcessingPlanId(null);
     }
@@ -84,7 +92,7 @@ export default function Subscription() {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4 xl:gap-6">
+          <div className="grid grid-cols-1 items-stretch justify-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4 xl:gap-6 auto-rows-fr">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
@@ -113,7 +121,7 @@ export default function Subscription() {
             ) : null}
           </div>
         ) : (
-          <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4 xl:gap-6">
+          <div className="grid grid-cols-1 items-stretch justify-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4 xl:gap-6 auto-rows-fr">
             {plans.map((plan) => (
               <SubscriptionCard
                 key={plan._id}

@@ -5,7 +5,7 @@ import Image from "next/image";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { calenderIcon, clockIcon, containerIcon } from "@/public/icons";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import MovieRentModal from "./movieRentModal";
 
 const TILE_W = 390;
@@ -27,6 +27,7 @@ type SliderItem = {
   bannerImage?: string;
   coverImage?: string;
   link?: string;
+  isRented?: boolean;
 };
 
 function getImagePath(path?: string) {
@@ -154,13 +155,24 @@ function MovieTile({
 
             <button
               type="button"
-              className="[font-family:var(--font-montserrat)] flex w-full items-center justify-center gap-2 rounded-[12px] sm:rounded-[16px] bg-linear-to-b from-primary to-secondary py-2 sm:py-4 text-sm font-bold text-white shadow-lg shadow-[#ff8c00]/25 pointer-events-auto hover:bg-[#ff9900] cursor-pointer"
+              className={
+                movie.isRented
+                  ? "[font-family:var(--font-montserrat)] flex w-full items-center justify-center gap-2 rounded-[12px] sm:rounded-[16px] bg-emerald-500/15 py-2 sm:py-4 text-sm font-bold text-emerald-400 border border-emerald-500/25 pointer-events-auto"
+                  : "[font-family:var(--font-montserrat)] flex w-full items-center justify-center gap-2 rounded-[12px] sm:rounded-[16px] bg-linear-to-b from-primary to-secondary py-2 sm:py-4 text-sm font-bold text-white shadow-lg shadow-[#ff8c00]/25 pointer-events-auto hover:bg-[#ff9900] cursor-pointer"
+              }
               onClick={(e) => {
                 e.stopPropagation();
                 onRentClick?.();
               }}
             >
-              Rent  Now
+              {movie.isRented ? (
+                <>
+                  <CheckCircle className="h-5 w-5" />
+                  Rented
+                </>
+              ) : (
+                "Rent Now"
+              )}
             </button>
           </div>
         ) : null}
@@ -211,7 +223,17 @@ function MovieSliderSkeleton({ title }: { title: string }) {
   );
 }
 
-function MovieSlider({ title, data, loading = false }: { title: string; data: SliderItem[]; loading?: boolean }) {
+function MovieSlider({
+  title,
+  data,
+  loading = false,
+  onRentSuccess,
+}: {
+  title: string;
+  data: SliderItem[];
+  loading?: boolean;
+  onRentSuccess?: (movieId: string) => void;
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(0);
   const [selectedMovie, setSelectedMovie] = useState<SliderItem | null>(null);
@@ -300,6 +322,7 @@ function MovieSlider({ title, data, loading = false }: { title: string; data: Sl
                     <MovieTile
                       movie={movie}
                       reducedMotion={reducedMotion}
+                      onActivate={() => setSelectedMovie(movie)}
                       onRentClick={() => setSelectedMovie(movie)}
                     />
                   </motion.div>
@@ -313,6 +336,7 @@ function MovieSlider({ title, data, loading = false }: { title: string; data: Sl
       <MovieRentModal
         movie={selectedMovie}
         onClose={() => setSelectedMovie(null)}
+        onRentSuccess={onRentSuccess}
       />
     </section>
   );

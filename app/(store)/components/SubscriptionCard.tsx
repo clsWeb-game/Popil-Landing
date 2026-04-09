@@ -46,19 +46,19 @@ export default function SubscriptionCard({
 
   return (
     <article
-      className={`relative flex h-[550px] w-full max-w-[360px] flex-col overflow-hidden rounded-[28px] px-5 pb-5 ${
+      className={`relative flex h-full w-full max-w-[360px] flex-col overflow-visible rounded-[28px] px-5 pb-5 bg-white ${
         isCurrentPlan ? "" : ""
       }`}
     >
       {/* Current plan badge */}
-      {isCurrentPlan && (
-        <div className="absolute top-4 right-4 z-20 rounded-full bg-linear-to-r from-primary to-secondary px-4 py-1 text-xs font-semibold text-white">
+      {/* {isCurrentPlan && (
+        <div className="absolute top-4 right-1.5 z-20 rounded-full bg-linear-to-r from-primary to-secondary px-2 py-1 text-xs font-semibold text-white">
           Your Plan
         </div>
-      )}
+      )} */}
 
       {/* Background SVG */}
-      <div
+      {/* <div
         className="absolute inset-0 z-0 p-5"
         style={{
           backgroundImage: "url(/background/priceCard.svg)",
@@ -67,10 +67,14 @@ export default function SubscriptionCard({
           backgroundPosition: "center",
         }}
         aria-hidden
-      />
+      /> */}
+
+      <div className="absolute -top-[10%] -translate-x-1/2 left-1/2 z-5 p-4 rounded-full bg-[#1b1b1d]">
+        <img src="/logo/cardIcon.svg" alt="Background" className="w-full h-full object-cover" />
+      </div>
 
       {/* Content wrapper */}
-      <div className="relative z-10 flex flex-1 flex-col px-7 pt-30 pb-8">
+      <div className="relative z-10 flex h-full flex-col px-7 pt-30 pb-8">
         {/* Plan name and label */}
         <div className="text-left">
           <h3
@@ -108,7 +112,7 @@ export default function SubscriptionCard({
         {/* CTA Button */}
         <div className="mt-6 flex justify-center">
           {isFree ? null : isCurrentPlan ? (
-            <span className="w-full max-w-[230px] rounded-[18px] bg-linear-to-b from-primary to-secondary px-8 py-2.5 text-center text-sm font-semibold text-white md:max-w-xs md:py-3 md:text-base opacity-80 cursor-default">
+            <span className="w-full max-w-[230px] rounded-[18px] bg-linear-to-b from-primary to-secondary px-8 py-2.5 text-center text-sm font-semibold text-white md:max-w-xs md:py-3 md:text-base opacity-80 cursor-not-allowed">
               Current Plan
             </span>
           ) : (
@@ -116,11 +120,12 @@ export default function SubscriptionCard({
               type="button"
               disabled={purchasing || disabled}
               onClick={onSubscribe}
-              className={
-                highlighted
-                  ? "w-full max-w-[230px] rounded-[18px] px-8 py-2.5 text-center text-sm font-semibold transition md:max-w-xs md:py-3 md:text-base bg-linear-to-b from-primary to-secondary text-white hover:shadow-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                  : "w-full max-w-[230px] rounded-[18px] border border-neutral-400 bg-transparent px-8 py-2.5 text-center text-sm font-semibold text-neutral-900 transition hover:bg-white md:max-w-xs md:py-3 md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-              }
+              // className={
+              //   highlighted
+              //     ? "cursor-pointer w-full max-w-[230px] rounded-[18px] px-8 py-2.5 text-center text-sm font-semibold transition md:max-w-xs md:py-3 md:text-base bg-linear-to-b from-primary to-secondary hover:bg-linear-to-r=b hover:from-primary hover:to-primary text-white hover:shadow-lg hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed duration-500"
+              //     : "cursor-pointer w-full max-w-[230px] rounded-[18px] border border-neutral-400 hover:border-primary bg-transparent px-8 py-2.5 text-center text-sm font-semibold text-neutral-900 hover:text-white transition hover:bg-primary md:max-w-xs md:py-3 md:text-base disabled:opacity-50 disabled:cursor-not-allowed duration-500"
+              // }
+              className = "cursor-pointer w-full max-w-[230px] rounded-[18px] border border-neutral-400 hover:border-primary bg-transparent px-8 py-2.5 text-center text-sm font-semibold text-neutral-900 hover:text-white transition hover:bg-primary md:max-w-xs md:py-3 md:text-base disabled:opacity-50 disabled:cursor-not-allowed duration-500"
             >
               {purchasing ? (
                 <span className="inline-flex items-center gap-2">

@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { useRentalCheckout } from "@/hooks/useRentalCheckout";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type MovieData = {
   id?: string;
@@ -84,10 +85,12 @@ export default function MovieRentModal({
   movie,
   onClose,
   contentType = "Movies",
+  onRentSuccess,
 }: {
   movie: MovieData | null;
   onClose: () => void;
   contentType?: "Movies" | "Series";
+  onRentSuccess?: (movieId: string) => void;
 }) {
   const open = movie !== null;
   const movieId = movie?.id || movie?._id || "";
@@ -133,11 +136,20 @@ export default function MovieRentModal({
       // (prevents two stacked modals and avoids layout issues on smaller screens).
       onClose();
       await rentMovie(movieId, contentType);
+      toast.success("Rental successful");
+      onRentSuccess?.(movieId);
     } catch (err: unknown) {
-      const e = err as { message?: string; status?: number };
+      const e = err as {
+        message?: string;
+        status?: number;
+        response?: { data?: { message?: string } };
+      };
       if (e?.message === "dismissed") return;
-      // If already rented (409) or any other error, user will see correct status
-      // the next time they open the modal.
+      const msg =
+        e?.response?.data?.message ||
+        e?.message ||
+        "Rental failed";
+      toast.error(msg);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movieId, contentType, rentMovie, onClose, router]);

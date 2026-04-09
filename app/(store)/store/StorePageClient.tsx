@@ -6,6 +6,7 @@ import Subscription from "../components/subscription";
 
 import { useFetch } from "@/hooks/useFetch";
 import { rentableMoviesData } from "../../../dummyData/dummyData";
+import { useEffect, useMemo, useState } from "react";
 
 type StoreMovieCard = {
   id: string;
@@ -20,6 +21,7 @@ type StoreMovieCard = {
   bannerImage?: string;
   coverImage?: string;
   link?: string;
+  isRented?: boolean;
 };
 
 type PaginatedResponse<T> = {
@@ -32,12 +34,20 @@ type PaginatedResponse<T> = {
 };
 
 export default function StorePageClient() {
-  const { data: storeSliderRes, loading: storeSliderLoading } =
+  const {
+    data: storeSliderRes,
+    loading: storeSliderLoading,
+    refetch: refetchStoreSlider,
+  } =
     useFetch<PaginatedResponse<StoreMovieCard>>("/user/getRentableMovies", "GET", {
       params: { page: 1, limit: 5 },
     });
 
-  const { data: rentableMoviesRes, loading: rentableMoviesLoading } =
+  const {
+    data: rentableMoviesRes,
+    loading: rentableMoviesLoading,
+    refetch: refetchRentableMovies,
+  } =
     useFetch<PaginatedResponse<StoreMovieCard>>("/user/getRentableMovies", "GET", {
       params: { page: 1, limit: 20 },
     });
@@ -50,19 +60,64 @@ export default function StorePageClient() {
     rentPrice: m.rentPrice ?? undefined,
   });
 
+  const normalizedSlider = useMemo(
+    () => storeSliderMovies.map(normalize),
+    [storeSliderMovies]
+  );
+  const normalizedRentable = useMemo(
+    () => rentableMovies.map(normalize),
+    [rentableMovies]
+  );
+
+  const [sliderUI, setSliderUI] = useState<StoreMovieCard[]>([]);
+  const [rentableUI, setRentableUI] = useState<StoreMovieCard[]>([]);
+  const [sliderHydrated, setSliderHydrated] = useState(false);
+  const [rentableHydrated, setRentableHydrated] = useState(false);
+
+  useEffect(() => {
+    if (normalizedSlider.length) {
+      setSliderUI(normalizedSlider);
+      setSliderHydrated(true);
+    }
+  }, [normalizedSlider]);
+
+  useEffect(() => {
+    if (normalizedRentable.length) {
+      setRentableUI(normalizedRentable);
+      setRentableHydrated(true);
+    }
+  }, [normalizedRentable]);
+
+  const optimisticMarkRented = (movieId: string) => {
+    setSliderUI((prev) =>
+      prev.map((m) => (m.id === movieId ? { ...m, isRented: true } : m))
+    );
+    setRentableUI((prev) =>
+      prev.map((m) => (m.id === movieId ? { ...m, isRented: true } : m))
+    );
+  };
+
+  const handleRentSuccess = (movieId: string) => {
+    optimisticMarkRented(movieId);
+    // Background refetch; UI stays (no skeleton) after first hydration.
+    refetchStoreSlider();
+    refetchRentableMovies();
+  };
   
 
   return (
     <>
       <StoreSlider
-        data={storeSliderMovies.map(normalize)}
-        loading={storeSliderLoading}
+        data={sliderUI}
+        loading={!sliderHydrated && storeSliderLoading}
+        onRentSuccess={handleRentSuccess}
       />
 
       <MovieSlider
         title="Rentable Movies"
-        data={rentableMovies.map(normalize)}
-        loading={rentableMoviesLoading}
+        data={rentableUI}
+        loading={!rentableHydrated && rentableMoviesLoading}
+        onRentSuccess={handleRentSuccess}
       />
 
       <MovieSlider title="Rentable Web Series" data={rentableMoviesData} />

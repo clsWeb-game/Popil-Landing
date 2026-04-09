@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { calenderIcon, clockIcon, containerIcon } from "@/public/icons";
 import MovieRentModal from "./movieRentModal";
+import { CheckCircle } from "lucide-react";
 
 type MovieData = {
   id?: string;
@@ -18,6 +19,7 @@ type MovieData = {
   bannerImage?: string;
   coverImage?: string;
   image?: string;
+  isRented?: boolean;
 };
 
 function StoreSliderSkeleton() {
@@ -55,7 +57,15 @@ function StoreSliderSkeleton() {
   );
 }
 
-function StoreSlider({ data, loading = false }: { data: MovieData[]; loading?: boolean }) {
+function StoreSlider({
+  data,
+  loading = false,
+  onRentSuccess,
+}: {
+  data: MovieData[];
+  loading?: boolean;
+  onRentSuccess?: (movieId: string) => void;
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedMovie, setSelectedMovie] = useState<MovieData | null>(null);
 
@@ -157,10 +167,23 @@ function StoreSlider({ data, loading = false }: { data: MovieData[]; loading?: b
             <button
               type="button"
               onClick={() => setSelectedMovie(activeMovie)}
-              className="bg-linear-to-b from-primary to-secondary hover:bg-[#ff9900] transition-colors text-white font-bold py-3 px-8 rounded-full flex items-center justify-center gap-2 w-full sm:w-auto shadow-lg shadow-[#ff8c00]/20"
+              className={
+                activeMovie.isRented
+                  ? "bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 font-bold py-3 px-8 rounded-full flex items-center justify-center gap-2 w-full sm:w-auto"
+                  : "bg-linear-to-b from-primary to-secondary hover:bg-[#ff9900] transition-colors text-white font-bold py-3 px-8 rounded-full flex items-center justify-center gap-2 w-full sm:w-auto shadow-lg shadow-[#ff8c00]/20"
+              }
             >
-              <Image src={containerIcon} alt="container" width={24} height={24} />
-              Rent for ₹{activeMovie.rentPrice}
+              {activeMovie.isRented ? (
+                <>
+                  <CheckCircle className="h-5 w-5" />
+                  Rented
+                </>
+              ) : (
+                <>
+                  <Image src={containerIcon} alt="container" width={24} height={24} />
+                  Rent for ₹{activeMovie.rentPrice}
+                </>
+              )}
             </button>
             {/* <button className="bg-linear-to-b from-[#40454A]/80 to-[#202329] hover:bg-[#3f4045] backdrop-blur-sm transition-colors text-white font-bold py-3 px-8 rounded-full w-full sm:w-auto">
               Watch Trailer
@@ -197,7 +220,11 @@ function StoreSlider({ data, loading = false }: { data: MovieData[]; loading?: b
         ))}
       </div>
       
-      <MovieRentModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+      <MovieRentModal
+        movie={selectedMovie}
+        onClose={() => setSelectedMovie(null)}
+        onRentSuccess={onRentSuccess}
+      />
 
       {/* Hide scrollbar for webkit (Chrome, Safari, etc.) */}
       <style dangerouslySetInnerHTML={{__html: `

@@ -331,10 +331,10 @@ function MovieSlider({
               centeredSlidesBounds
               grabCursor
               speed={reducedMotion ? 0 : 450}
-              loop={n > 1}
-              loopAdditionalSlides={n > 1 ? Math.min(8, Math.max(3, n)) : 0}
-              loopAddBlankSlides={n > 1}
-              watchSlidesProgress={n > 1}
+              // loop={n > 1}
+              // loopAdditionalSlides={n > 1 ? Math.min(8, Math.max(3, n)) : 0}
+              // loopAddBlankSlides={n > 1}
+              // watchSlidesProgress={n > 1}
               resistanceRatio={0.65}
               slidesOffsetBefore={4}
               slidesOffsetAfter={4}

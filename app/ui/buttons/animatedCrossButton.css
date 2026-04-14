@@ -1,0 +1,110 @@
+.animatedCrossButton-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.animatedCrossButton-switch {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.animatedCrossButton-wrapper {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.animatedCrossButton-row {
+  width: 100%;
+  height: 50%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.animatedCrossButton-rowBottom {
+  align-items: flex-end;
+}
+
+.animatedCrossButton-dot {
+  width: 8px;
+  height: 8px;
+  border: 2px solid #FEA500;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.animatedCrossButton-rowHorizontal {
+  position: absolute;
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+
+.animatedCrossButton-rowVertical {
+  position: absolute;
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+
+/* Hover states */
+.animatedCrossButton-switch:hover .animatedCrossButton-wrapper .animatedCrossButton-rowHorizontal {
+  width: 100px;
+}
+
+.animatedCrossButton-switch:hover .animatedCrossButton-wrapper .animatedCrossButton-rowVertical {
+  height: 100px;
+}
+
+.animatedCrossButton-switch:hover .animatedCrossButton-wrapper .animatedCrossButton-rowVertical .animatedCrossButton-middleDot {
+  border-radius: 5px;
+  height: 35px;
+}
+
+.animatedCrossButton-switch:hover .animatedCrossButton-wrapper .animatedCrossButton-rowHorizontal .animatedCrossButton-middleDotHorizontal {
+  border-radius: 5px;
+  width: 35px;
+}
+
+/* Checked states */
+.animatedCrossButton-switch input:checked+.animatedCrossButton-wrapper {
+  transform: rotate(45deg) scale(1.2);
+}
+
+.animatedCrossButton-switch input:checked+.animatedCrossButton-wrapper .animatedCrossButton-rowVertical {
+  height: 100px;
+}
+
+.animatedCrossButton-switch input:checked+.animatedCrossButton-wrapper .animatedCrossButton-rowHorizontal {
+  width: 100px;
+}
+
+.animatedCrossButton-switch input:checked+.animatedCrossButton-wrapper .animatedCrossButton-rowVertical .animatedCrossButton-middleDot {
+  border-radius: 5px;
+  height: 35px;
+}
+
+.animatedCrossButton-switch input:checked+.animatedCrossButton-wrapper .animatedCrossButton-rowHorizontal .animatedCrossButton-middleDotHorizontal {
+  border-radius: 5px;
+  width: 35px;
+}

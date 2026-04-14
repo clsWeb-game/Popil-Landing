@@ -241,3 +241,29 @@
 /* .razorpay-container {
   z-index: 9999 !important;
 } */
+
+/* MovieSlider (Swiper): allow tile hover-lift; keep horizontal scroll/clipping */
+.movie-slider-swiper.swiper {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/* Subscription plans: card badge can extend above the slide */
+.subscription-plans-swiper.swiper {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/* Match desktop grid: all visible slides share the row height (tallest card) */
+.subscription-plans-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+/* Override Swiper default `.swiper-slide { height: 100%; display: block }` so the
+   flex row can use the same cross-size for every slide (tallest card in view). */
+.subscription-plans-swiper .swiper-slide {
+  display: flex;
+  height: auto;
+  align-self: stretch;
+  box-sizing: border-box;
+}

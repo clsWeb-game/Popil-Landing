@@ -1,4 +1,5 @@
 import type { SubscriptionPlan } from "@/types/subscription";
+import { formatSubscriptionDurationLabel } from "@/lib/formatSubscriptionDuration";
 
 type SubscriptionCardProps = {
   plan: SubscriptionPlan;
@@ -26,8 +27,7 @@ function buildFeatures(plan: SubscriptionPlan): string[] {
 
 function getPriceLabel(plan: SubscriptionPlan) {
   if (plan.slug === "free" || plan.price === 0) return null;
-  if (plan.durationDays === 1) return "/day";
-  return "/month";
+  return formatSubscriptionDurationLabel(plan.durationDays) || null;
 }
 
 export default function SubscriptionCard({
@@ -46,7 +46,7 @@ export default function SubscriptionCard({
 
   return (
     <article
-      className={`relative flex h-full w-full max-w-[360px] flex-col overflow-visible rounded-[28px] px-5 pb-5 bg-white ${
+      className={`relative flex h-full w-full max-w-[360px] min-h-[578px] flex-col overflow-visible rounded-[28px] px-5 pb-5 bg-white ${
         isCurrentPlan ? "" : ""
       }`}
     >
@@ -95,7 +95,7 @@ export default function SubscriptionCard({
         {isFree ? (
           null
         ) : (
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-neutral-900 md:justify-start md:gap-10">
+          <div className="mt-6 flex flex-nowrap items-center justify-center gap-x-4 gap-y-2 text-neutral-900 md:justify-start md:gap-10">
             <div className="flex items-baseline gap-1">
               <span className="text-[32px] font-semibold leading-none sm:text-[36px] md:text-[36px]">
                 ₹{plan.price}

@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useRazorpayCheckout } from "@/hooks/useRazorpayCheckout";
 import SubscriptionCard from "./SubscriptionCard";
 import { toast } from "sonner";
+
+import "swiper/css";
 
 export default function Subscription() {
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
@@ -65,7 +68,7 @@ export default function Subscription() {
   return (
     <section className="w-full bg-background px-4 py-16 md:px-8 md:py-20 lg:py-24">
       <div className="mx-auto max-w-[1400px]">
-        <header className="mx-auto mb-12 max-w-2xl text-center md:mb-16">
+        <header className="mx-auto mb-18 max-w-2xl text-center md:mb-18">
           <h2 className="text-xl font-semibold text-white md:text-4xl lg:text-[36px]">
             Subscription Plan
           </h2>
@@ -121,21 +124,68 @@ export default function Subscription() {
             ) : null}
           </div>
         ) : (
-          <div className="grid grid-cols-1 items-stretch justify-items-center gap-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4 xl:gap-6 auto-rows-fr">
-            {plans.map((plan) => (
-              <SubscriptionCard
-                key={plan._id}
-                plan={plan}
-                isCurrentPlan={String(plan._id) === String(currentPlanId)}
-                purchasing={purchasing && processingPlanId === plan._id}
-                disabled={
-                  (purchasing && processingPlanId !== plan._id) ||
-                  (plan.slug === "daily-pass" && hasActiveDailyPass)
-                }
-                onSubscribe={() => handleSubscribe(plan._id)}
-              />
-            ))}
-          </div>
+          <>
+            {/* &lt; xl: Swiper (touch / drag), no nav UI */}
+            <div className="xl:hidden -mx-1 px-1">
+              <Swiper
+                className="subscription-plans-swiper overflow-visible!"
+                slidesPerView={1.12}
+                spaceBetween={32}
+                centeredSlides
+                grabCursor
+                resistanceRatio={0.65}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 24,
+                    centeredSlides: false,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                    centeredSlides: false,
+                  },
+                }}
+              >
+                {plans.map((plan) => (
+                  <SwiperSlide
+                    key={plan._id}
+                    className="flex! items-stretch justify-center"
+                  >
+                    <div className="flex h-full min-h-0 w-full max-w-[360px] flex-col items-stretch justify-center">
+                      <SubscriptionCard
+                        plan={plan}
+                        isCurrentPlan={String(plan._id) === String(currentPlanId)}
+                        purchasing={purchasing && processingPlanId === plan._id}
+                        disabled={
+                          (purchasing && processingPlanId !== plan._id) ||
+                          (plan.slug === "daily-pass" && hasActiveDailyPass)
+                        }
+                        onSubscribe={() => handleSubscribe(plan._id)}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+            {/* xl+: same layout as before — four columns */}
+            <div className="hidden auto-rows-fr items-stretch justify-items-center gap-8 xl:grid xl:grid-cols-4 xl:gap-6">
+              {plans.map((plan) => (
+                <SubscriptionCard
+                  key={plan._id}
+                  plan={plan}
+                  isCurrentPlan={String(plan._id) === String(currentPlanId)}
+                  purchasing={purchasing && processingPlanId === plan._id}
+                  disabled={
+                    (purchasing && processingPlanId !== plan._id) ||
+                    (plan.slug === "daily-pass" && hasActiveDailyPass)
+                  }
+                  onSubscribe={() => handleSubscribe(plan._id)}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </section>

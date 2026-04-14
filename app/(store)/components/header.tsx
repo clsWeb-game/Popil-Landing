@@ -104,7 +104,7 @@ export default function Header() {
             isScrolled ? "py-[5px] md:py-[14px]" : "py-[5px] md:py-[22px]"
           }`}
         >
-          <Link href="/" className="flex items-center">
+          <Link href="/store" className="flex items-center">
             <Image
               src="/logo/logo.svg"
               alt="Popil"

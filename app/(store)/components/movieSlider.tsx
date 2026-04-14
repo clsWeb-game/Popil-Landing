@@ -1,17 +1,22 @@
 "use client";
 
-import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Swiper as SwiperClass } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
 
-import { calenderIcon, clockIcon, containerIcon } from "@/public/icons";
+import { calenderIcon, clockIcon } from "@/public/icons";
 import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import MovieRentModal from "./movieRentModal";
 
+import "swiper/css";
+
 const TILE_W = 390;
-const TILE_H = 270;
 const TILE_W_SM = 290;
-const TILE_H_SM = 200;
+const GAP_SM = 16;
+const GAP_MD = 20;
 const IMAGE_LIFT_PX = 55;
 
 type SliderItem = {
@@ -181,18 +186,18 @@ function MovieTile({
   );
 }
 
-function useVisibleTileCount() {
-  const [count, setCount] = useState(5);
+function useSliderGap() {
+  const [gap, setGap] = useState(GAP_MD);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setCount(mq.matches ? 3 : 5);
+    const update = () => setGap(mq.matches ? GAP_SM : GAP_MD);
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  return count;
+  return gap;
 }
 
 function MovieSliderSkeleton({ title }: { title: string }) {
@@ -228,47 +233,53 @@ function MovieSlider({
   data,
   loading = false,
   onRentSuccess,
+  linkBehavior = "modal",
+  rentModalContentType = "Movies",
 }: {
   title: string;
   data: SliderItem[];
   loading?: boolean;
   onRentSuccess?: (movieId: string) => void;
+  /** When `navigate`, tile click follows `movie.link` instead of opening the rent modal. */
+  linkBehavior?: "modal" | "navigate";
+  rentModalContentType?: "Movies" | "Series";
 }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [slideDir, setSlideDir] = useState(0);
+  const router = useRouter();
   const [selectedMovie, setSelectedMovie] = useState<SliderItem | null>(null);
   const reducedMotion = useReducedMotion() ?? false;
-  const visibleCount = useVisibleTileCount();
+  const spaceBetween = useSliderGap();
+  const swiperRef = useRef<SwiperClass | null>(null);
 
   const items = useMemo(() => (Array.isArray(data) ? data : []), [data]);
   const n = items.length;
+  const canNavigate = n > 1;
+
+  const swiperKey = useMemo(
+    () => items.map((m) => m.id).join("|"),
+    [items]
+  );
 
   const goPrev = useCallback(() => {
-    if (!n) return;
-    setSlideDir(-1);
-    setCurrentIndex((i) => i - 1);
-  }, [n]);
+    if (!canNavigate || !swiperRef.current) return;
+    swiperRef.current.slidePrev();
+  }, [canNavigate]);
 
   const goNext = useCallback(() => {
-    if (!n) return;
-    setSlideDir(1);
-    setCurrentIndex((i) => i + 1);
-  }, [n]);
-
-  const visible = useMemo(() => {
-    if (!n) return [];
-    const mod = (i: number) => ((i % n) + n) % n;
-    const half = Math.floor(visibleCount / 2);
-    const itemsList: { idx: number; virtualIndex: number }[] = [];
-    for (let o = -half; o <= half; o += 1) {
-      itemsList.push({ idx: mod(currentIndex + o), virtualIndex: currentIndex + o });
-    }
-    return itemsList;
-  }, [currentIndex, n, visibleCount]);
+    if (!canNavigate || !swiperRef.current) return;
+    swiperRef.current.slideNext();
+  }, [canNavigate]);
 
   if (loading) return <MovieSliderSkeleton title={title} />;
 
   if (!n) return null;
+
+  const activateTile = (movie: SliderItem) => {
+    if (linkBehavior === "navigate" && movie.link) {
+      router.push(movie.link);
+      return;
+    }
+    setSelectedMovie(movie);
+  };
 
   return (
     <section className="flex w-full flex-col bg-background text-white">
@@ -282,8 +293,11 @@ function MovieSlider({
               type="button"
               onClick={goPrev}
               aria-label="Previous"
+              aria-disabled={!canNavigate}
               whileTap={{ scale: 0.9 }}
-              className="grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/10 transition-colors hover:bg-white/15"
+              className={`grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/10 transition-colors ${
+                canNavigate ? "hover:bg-white/15" : "opacity-40 cursor-not-allowed"
+              }`}
             >
               <span className="text-lg leading-none text-white"><ChevronLeft size={24} /></span>
             </motion.button>
@@ -291,8 +305,11 @@ function MovieSlider({
               type="button"
               onClick={goNext}
               aria-label="Next"
+              aria-disabled={!canNavigate}
               whileTap={{ scale: 0.9 }}
-              className="grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/10 transition-colors hover:bg-white/15"
+              className={`grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/10 transition-colors ${
+                canNavigate ? "hover:bg-white/15" : "opacity-40 cursor-not-allowed"
+              }`}
             >
               <span className="text-lg leading-none text-white"><ChevronRight size={24} /></span>
             </motion.button>
@@ -301,34 +318,41 @@ function MovieSlider({
 
         {/* 55px reserves space so a hovered tile image can move up without stacking layout growth */}
         <div className="w-full overflow-x-clip overflow-y-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="mx-auto flex w-max items-end justify-center gap-4 px-1 pt-[55px] md:gap-5">
-            <AnimatePresence initial={false} mode="popLayout">
-              {visible.map(({ idx, virtualIndex }) => {
-                const movie = items[idx];
-                return (
-                  <motion.div
-                    layout
-                    key={virtualIndex}
-                    initial={{ opacity: 0, scale: 0.8, x: slideDir > 0 ? 150 : -150 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, x: slideDir > 0 ? -150 : 150 }}
-                    transition={{
-                      layout: { type: "spring", stiffness: 300, damping: 30 },
-                      opacity: { duration: 0.3 },
-                      scale: { duration: 0.3 },
-                    }}
-                    className="flex shrink-0 items-end justify-center"
-                  >
-                    <MovieTile
-                      movie={movie}
-                      reducedMotion={reducedMotion}
-                      onActivate={() => setSelectedMovie(movie)}
-                      onRentClick={() => setSelectedMovie(movie)}
-                    />
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+          <div className="px-1 pt-[55px]">
+            <Swiper
+              key={swiperKey}
+              className="movie-slider-swiper overflow-visible!"
+              onSwiper={(instance) => {
+                swiperRef.current = instance;
+              }}
+              slidesPerView="auto"
+              spaceBetween={spaceBetween}
+              centeredSlides
+              centeredSlidesBounds
+              grabCursor
+              speed={reducedMotion ? 0 : 450}
+              loop={n > 1}
+              loopAdditionalSlides={n > 1 ? Math.min(8, Math.max(3, n)) : 0}
+              loopAddBlankSlides={n > 1}
+              watchSlidesProgress={n > 1}
+              resistanceRatio={0.65}
+              slidesOffsetBefore={4}
+              slidesOffsetAfter={4}
+            >
+              {items.map((movie) => (
+                <SwiperSlide
+                  key={movie.id}
+                  className="flex! w-[290px]! max-w-[290px]! items-end justify-center md:w-[390px]! md:max-w-[390px]!"
+                >
+                  <MovieTile
+                    movie={movie}
+                    reducedMotion={reducedMotion}
+                    onActivate={() => activateTile(movie)}
+                    onRentClick={() => setSelectedMovie(movie)}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </div>
@@ -336,6 +360,7 @@ function MovieSlider({
       <MovieRentModal
         movie={selectedMovie}
         onClose={() => setSelectedMovie(null)}
+        contentType={rentModalContentType}
         onRentSuccess={onRentSuccess}
       />
     </section>

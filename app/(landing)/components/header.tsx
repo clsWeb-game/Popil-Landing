@@ -5,7 +5,7 @@ import NavButton from "@/app/ui/buttons/navButton";
 import { storeIcon } from "@/public/icons";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
-import { LogIn, LogOut } from "lucide-react";
+import { LogIn, LogOut, UserPlus } from "lucide-react";
 import { clearAuth, getAuth } from "@/utils/auth";
 
 /** Store / Logout: label hidden below md; icons only on mobile (labels still available to screen readers). */
@@ -80,6 +80,14 @@ export default function Header() {
           </Link>
 
           <nav className="flex items-center gap-3" aria-label="Main">
+            {!isLoggedIn && (
+              <NavButton
+                href="/register"
+                text="Register"
+                className="rounded-full bg-linear-to-b from-[#3c3c3c] to-[#1e1e1e] border border-[#6b6b6b] px-4 py-2 font-medium text-white! text-base md:px-6 hover:brightness-110 transition-all shadow-sm"
+              />
+            )}
+
             <NavButton
               href="/store"
               text="Store"
@@ -107,13 +115,16 @@ export default function Header() {
                 className="rounded-full bg-linear-to-b from-primary to-secondary border border-transparent px-3 py-2 font-medium text-white! text-base cursor-pointer md:px-4"
               />
             ) : (
-              <NavButton
-                href="/login"
-                text="Login"
-                icon={<LogIn className="h-[24px] w-[24px]" aria-hidden />}
-                colorClassName=""
-                className="rounded-full bg-linear-to-b from-primary to-secondary border border-transparent px-3 py-2 font-medium text-white! text-base md:px-4"
-              />
+              <div className="flex items-center gap-3">
+                <NavButton
+                  href="/login"
+                  text="Login"
+                  textClassName={navIconOnlySm}
+                  icon={<LogIn className="h-[24px] w-[24px]" aria-hidden />}
+                  colorClassName=""
+                  className="rounded-full bg-linear-to-b from-primary to-secondary border border-transparent px-3 py-2 font-medium text-white! text-base md:px-4"
+                />
+              </div>
             )}
           </nav>
         </div>

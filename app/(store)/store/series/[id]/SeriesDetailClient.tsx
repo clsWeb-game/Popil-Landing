@@ -514,7 +514,7 @@ export default function SeriesDetailClient({ seriesId }: { seriesId: string }) {
         <div className="absolute inset-0 bg-linear-to-r from-background/90 via-background/55 to-background/20" />
         <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" />
 
-          <div className="relative mx-auto flex min-h-[min(70vh,720px)] max-w-[calc(100%-150px)] flex-col justify-end pb-12 pt-28 md:pb-16">
+          <div className="relative mx-auto flex min-h-[min(70vh,720px)] max-w-[calc(100%-50px)] sm:w-[calc(100%-150px)] flex-col justify-end pb-12 pt-28 md:pb-16">
           <h1 className="[font-family:var(--font-montserrat)] text-3xl font-extrabold uppercase leading-[0.95] tracking-tight text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
             {series.seriesName}
           </h1>
@@ -648,7 +648,7 @@ export default function SeriesDetailClient({ seriesId }: { seriesId: string }) {
       ) : null}
 
       {/* Episodes */}
-      <section className="mx-auto w-[calc(100%-150px)]  py-10  md:py-14 ">
+      <section className="mx-auto w-[calc(100%-50px)] sm:w-[calc(100%-150px)]  py-10  md:py-14 ">
         <h2 className="[font-family:var(--font-montserrat)] text-xl font-semibold tracking-tight md:text-2xl">
           Episodes
         </h2>

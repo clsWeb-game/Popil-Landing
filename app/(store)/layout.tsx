@@ -13,7 +13,7 @@ export default function StoreLayout({
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
       />
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col overflow-x-hidden ">
         <Header />
         <div className="w-full flex-1">{children}</div>
         <Footer />
